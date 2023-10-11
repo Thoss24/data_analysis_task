@@ -81,7 +81,10 @@ city_average = grouped.mean()
 
 array = city_average.values
 x = array[:,0:13]
+x = x.astype('int')
 y = array[:,12]
+y = y.astype('int')
+
 
 #print(city_average)
 
@@ -92,7 +95,7 @@ test = SelectKBest(score_func=chi2, k=4)
 fit = test.fit(x, y)
 
 np.set_printoptions(precision=3)
-#print(fit.scores_)
+print(fit.scores_)
 
 features = fit.transform(x)
-print(features[0:5,:])
+print(features[0:23,:])
