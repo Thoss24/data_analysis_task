@@ -1,15 +1,9 @@
 import pandas as pd
+import csv
 import math
 import numpy as np
 from sklearn.feature_selection import SelectKBest
 from sklearn.feature_selection import chi2
-
-#good < 50
-#satisfactory > 50 < 100
-#moderate > 100 < 150
-#poor > 150 < 300
-#very poor > 400 < 500
-#severe > 500
 
 df = pd.read_csv("city_day.csv")
 
@@ -51,51 +45,73 @@ df["Toluene"].fillna(eleventh, inplace = True)
 twelfth = df["Xylene"].mean()
 df["Xylene"].fillna(twelfth, inplace = True)
 
+#good < 50
+#satisfactory > 50 < 100
+#moderate > 100 < 150
+#poor > 150 < 300
+#very poor > 400 < 500
+#severe > 500
+
+#print(df)
 
 for x in df.index:
     # set mean of AQI if value is missing
     if math.isnan(float(df.loc[x, "AQI"])):
         df.loc[x, "AQI"] = df.loc[x, ["PM2.5","PM10","NO","NO2","NOx","NH3","CO","SO2","O3","Benzene","Toluene","Xylene"]].mean()
-    # set AQI_
-    if df.loc[x, "AQI"] > 500:
-        df.loc[x, "AQI_Bucket"] = 6
-    if df.loc[x, "AQI"] > 400 and df.loc[x, "AQI"] < 500:
-        df.loc[x, "AQI_Bucket"] = 5
-    if df.loc[x, "AQI"] > 150 and df.loc[x, "AQI"] < 300:
-        df.loc[x, "AQI_Bucket"] = 4
-    if df.loc[x, "AQI"] > 100 and df.loc[x, "AQI"] < 150:
-        df.loc[x, "AQI_Bucket"] = 3
-    if df.loc[x, "AQI"] > 50 and df.loc[x, "AQI"] < 100:
-        df.loc[x, "AQI_Bucket"] = 2
-    else: 
-        df.loc[x, "AQI_Bucket"] = 1
+#     # set AQI_
+#     if df.loc[x, "AQI"] > 500:
+#         df.loc[x, "AQI_Bucket"] = "Severe"
+#     if df.loc[x, "AQI"] > 400 and df.loc[x, "AQI"] < 500:
+#         df.loc[x, "AQI_Bucket"] = "Very Poor"
+#     if df.loc[x, "AQI"] > 150 and df.loc[x, "AQI"] < 300:
+#         df.loc[x, "AQI_Bucket"] = "Poor"
+#     if df.loc[x, "AQI"] > 100 and df.loc[x, "AQI"] < 150:
+#         df.loc[x, "AQI_Bucket"] = "Moderate"
+#     if df.loc[x, "AQI"] > 50 and df.loc[x, "AQI"] < 100:
+#         df.loc[x, "AQI_Bucket"] = "Satisfactory"
+#     if df.loc[x, "AQI"] < 50:
+#         df.loc[x, "AQI_Bucket"] = "Good"
 
-#df['AQI_Bucket'] = df['AQI_Bucket'].astype(int)
+cols = ["PM2.5","PM10","NO","NO2","NOx","NH3","CO","SO2","O3","Benzene","Toluene","Xylene", 'AQI']
 
-#df.drop('AQI_Bucket', axis=1)
+df[cols] = df[cols].applymap(np.int64)
+
+df.to_csv("no_aqi_bucket.csv", index=False)
+
+# #df['AQI_Bucket'] = df['AQI_Bucket'].astype(int)
+
+# print(df)
+
+# grouped = df.groupby('City')
+
+# city_average = grouped.mean()
+
+# city_average.to_csv("clean.csv")
+
+# #city_average[cols] = city_average[cols].applymap(np.int64)
 
 
-grouped = df.groupby('City')
+# # for index, row in df.iterrows():
+# #     print(row['AQI'], row['AQI_Bucket'])
 
-city_average = grouped.mean()
+# df.drop(['City', 'Date'], axis=1, inplace=True)
 
-array = city_average.values
-x = array[:,0:13]
-x = x.astype('int')
-y = array[:,12]
-y = y.astype('int')
+# array = df.values
+# x = array[:,0:13]
+# x = x.astype('int')
+# y = array[:,13]
+# #y = y.astype('int')
 
+# # #print(city_average)
 
-#print(city_average)
+# #chi squared = cell (O-E) squared / E
+# # sum of all cells of O-E squared / E
 
-#chi squared = cell (O-E) squared / E
-# sum of all cells of O-E squared / E
+# test = SelectKBest(score_func=chi2, k=4)
+# fit = test.fit(x, y)
 
-test = SelectKBest(score_func=chi2, k=4)
-fit = test.fit(x, y)
+# np.set_printoptions(precision=3)
+# print(fit.scores_)
 
-np.set_printoptions(precision=3)
-print(fit.scores_)
-
-features = fit.transform(x)
-print(features[0:23,:])
+# features = fit.transform(x)
+# print(features)
