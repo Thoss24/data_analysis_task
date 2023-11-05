@@ -78,6 +78,10 @@ df[cols] = df[cols].applymap(np.int64)
 
 df.to_csv("no_aqi_bucket.csv", index=False)
 
+newDf = df.drop(['AQI_Bucket', 'Date', 'City'],  axis="columns")
+
+newDf.to_csv("removed_date_city_aqibucket.csv", index=False)
+
 # #df['AQI_Bucket'] = df['AQI_Bucket'].astype(int)
 
 # print(df)
